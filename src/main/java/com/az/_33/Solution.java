@@ -36,17 +36,17 @@ public class Solution {
             }
         }
 
-        int commonDenominator = terminals.stream().map(i -> probabilities[0][i]).map(f -> f.denominator).reduce(Fraction::lcm).orElseThrow();
+        long commonDenominator = terminals.stream().map(i -> probabilities[0][i]).map(f -> f.denominator).reduce(Fraction::lcm).orElseThrow();
 
         Integer[] terminalsArray = terminals.toArray(new Integer[]{});
         int[] result = new int[terminals.size() + 1];
         for (int i = 0; i < terminals.size(); i++) {
             int t = terminalsArray[i];
             Fraction f = probabilities[0][t];
-            result[i] = commonDenominator / f.denominator * f.numerator;
+            result[i] = (int) (commonDenominator / f.denominator * f.numerator);
         }
 
-        result[result.length - 1] = commonDenominator;
+        result[result.length - 1] = (int) commonDenominator;
 
         return result;
     }
@@ -123,47 +123,43 @@ public class Solution {
         public static final Fraction ZERO = new Fraction(0, 1);
         public static final Fraction ONE = new Fraction(1, 1);
 
-        final int numerator;
-        final int denominator;
+        final long numerator;
+        final long denominator;
 
-        public Fraction(int numerator, int denominator) {
-            int gcd = gcd(numerator, denominator);
+        public Fraction(long numerator, long denominator) {
+            long gcd = gcd(numerator, denominator);
             this.numerator = numerator / gcd;
             this.denominator = denominator / gcd;
         }
 
-        public static int gcd(int a, int b) {
+        public static long gcd(long a, long b) {
             return b == 0 ? a : gcd(b, a % b);
         }
 
-        public static int lcm(int a, int b) {
+        public static long lcm(long a, long b) {
             return (a / gcd(a, b)) * b;
         }
 
         public Fraction add(Fraction fractionTwo) {
-            int resultNumerator = (numerator * fractionTwo.denominator) +
-                    (fractionTwo.numerator * denominator);
-            int resultDenominator = denominator * fractionTwo.denominator;
-            return new Fraction(resultNumerator, resultDenominator);
+            return new Fraction(
+                    (numerator * fractionTwo.denominator) + (fractionTwo.numerator * denominator),
+                    denominator * fractionTwo.denominator
+            );
         }
 
         public Fraction subtract(Fraction fractionTwo) {
-            int resultNumerator = (numerator * fractionTwo.denominator) -
-                    (fractionTwo.numerator * denominator);
-            int resultDenominator = denominator * fractionTwo.denominator;
-            return new Fraction(resultNumerator, resultDenominator);
+            return new Fraction(
+                    (numerator * fractionTwo.denominator) - (fractionTwo.numerator * denominator),
+                    denominator * fractionTwo.denominator
+            );
         }
 
         public Fraction multiply(Fraction fractionTwo) {
-            int resultNumerator = numerator * fractionTwo.numerator;
-            int resultDenominator = denominator * fractionTwo.denominator;
-            return new Fraction(resultNumerator, resultDenominator);
+            return new Fraction(numerator * fractionTwo.numerator, denominator * fractionTwo.denominator);
         }
 
         public Fraction divide(Fraction fractionTwo) {
-            int resultNumerator = numerator * fractionTwo.denominator;
-            int resultDenominator = denominator * fractionTwo.numerator;
-            return new Fraction(resultNumerator, resultDenominator);
+            return new Fraction(numerator * fractionTwo.denominator, denominator * fractionTwo.numerator);
         }
 
         @Override
